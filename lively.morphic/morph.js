@@ -2495,14 +2495,14 @@ export class Morph {
   // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
   // comments
   // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-  addComment (commentText) {
+  async addComment (commentText) {
     const comment = {
       text: commentText,
       timestamp: new Date().getTime(),
       position: pt(0, 0)
     };
     this.comments.push(comment);
-    CommentBrowser.update();
+    await CommentBrowser.addCommentForMorph(comment, this);
     return comment;
   }
 
