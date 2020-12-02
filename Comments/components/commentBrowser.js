@@ -18,7 +18,7 @@ export class CommentBrowser extends Window {
   // }
 
   static isOpen () {
-    return instance && instance.visible;
+    return instance && $world.get('aCommentBrowser');
   }
 
   static async removeCommentForMorph (updatedComment, morph) {
@@ -44,16 +44,9 @@ export class CommentBrowser extends Window {
 
       this.commentGroups = {}; // dict Morph id -> Comment group morph
     } else {
-      instance.visible = true;
-      this.toggleHalos();
+      $world.addMorph(instance);
     }
     return instance;
-  }
-
-  toggleHalos () {
-    this.withAllSubmorphsDo((submorph) => {
-      submorph.halosEnabled = !submorph.halosEnabled;
-    });
   }
 
   initializeExtents () {
@@ -91,8 +84,7 @@ export class CommentBrowser extends Window {
       topbar.uncolorCommentBrowserButton();
     }
     this.removeCommentIndicators();
-    this.visible = false;
-    this.toggleHalos();
+    this.fadeOut(200);
   }
 
   async initializeCommentGroupMorphs () {
