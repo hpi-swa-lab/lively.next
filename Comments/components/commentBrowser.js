@@ -13,12 +13,12 @@ export class CommentBrowser extends Window {
     instance.close();
   }
 
-  // static get instance () {
-  //  return instance;
-  // }
+  static get instance () {
+    return instance;
+  }
 
   static isOpen () {
-    return instance && $world.get('aCommentBrowser');
+    return instance && $world.get('comment browser');
   }
 
   static async removeCommentForMorph (updatedComment, morph) {
@@ -39,14 +39,19 @@ export class CommentBrowser extends Window {
       this.relayoutWindow();
 
       this.initializeCommentGroupMorphs();
-      $world.addMorph(this);
       instance = this;
-
+      this.name = 'comment browser';
       this.commentGroups = {}; // dict Morph id -> Comment group morph
+
+      this.makeVisible();
     } else {
-      $world.addMorph(instance);
+      this.makeVisible();
     }
     return instance;
+  }
+
+  makeVisible () {
+    $world.addMorph(instance);
   }
 
   initializeExtents () {
@@ -66,14 +71,14 @@ export class CommentBrowser extends Window {
       clipMode: 'auto',
       name: 'comment container'
     });
-    this.containerLayout = new Morph({
+    this.layoutContainer = new Morph({
       layout: new VerticalLayout({
         spacing: 5,
         orderByIndex: true
       }),
       name: 'comment container layout'
     });
-    this.container.addMorph(this.containerLayout);
+    this.container.addMorph(this.layoutContainer);
     this.addMorph(this.container);
   }
 
@@ -83,8 +88,7 @@ export class CommentBrowser extends Window {
     if (topbar) {
       topbar.uncolorCommentBrowserButton();
     }
-    this.removeCommentIndicators();
-    this.fadeOut(200);
+    this.remove();
   }
 
   async initializeCommentGroupMorphs () {
@@ -108,7 +112,7 @@ export class CommentBrowser extends Window {
       await commentGroupMorph.initialize(morph);
       this.commentGroups[morph.id] = commentGroupMorph;
       await this.commentGroups[morph.id].addCommentMorph(comment);
-      this.containerLayout.addMorph(commentGroupMorph);
+      this.layoutContainer.addMorph(commentGroupMorph);
     }
   }
 
@@ -121,13 +125,9 @@ export class CommentBrowser extends Window {
   }
 
   removeCommentGroup (group) {
+    group.hideCommentIndicators();
     delete this.commentGroups[group.referenceMorph.id];
     group.remove();
-  }
-
-  removeCommentIndicators () {
-    // comment indicators are referenced in comment groups
-    this.containerLayout.submorphs.forEach((commentGroup) => commentGroup.removeCommentIndicators());
   }
 
   getCommentMorphForComment (comment, referencedMorph) {
