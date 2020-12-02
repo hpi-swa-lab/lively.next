@@ -2506,9 +2506,9 @@ export class Morph {
     return comment;
   }
 
-  removeComment (commentToRemove) {
+  async removeComment (commentToRemove) {
     this.comments = this.comments.filter(comment => commentToRemove !== comment);
-    CommentBrowser.update();
+    CommentBrowser.removeCommentForMorph(commentToRemove, this);
   }
 
   emptyComments () {
