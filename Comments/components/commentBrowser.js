@@ -29,6 +29,14 @@ export class CommentBrowser extends Window {
     await instance.addCommentForMorph(comment, morph);
   }
 
+  static async initializeCommentBrowser () {
+    const firstTimeOpened = !instance;
+    new CommentBrowser();
+    if (firstTimeOpened) {
+      await instance.initializeCommentGroupMorphs();
+    }
+  }
+
   // Construction and initialization
 
   constructor () {
@@ -38,7 +46,6 @@ export class CommentBrowser extends Window {
       this.initializeExtents();
       this.relayoutWindow();
 
-      this.initializeCommentGroupMorphs();
       instance = this;
       this.name = 'comment browser';
       this.commentGroups = {}; // dict Morph id -> Comment group morph
