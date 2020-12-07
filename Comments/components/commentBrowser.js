@@ -5,6 +5,7 @@ import { pt, Rectangle } from 'lively.graphics';
 import { resource } from 'lively.resources';
 import { connect } from 'lively.bindings';
 import { CommentIndicator } from './commentIndicator.js';
+import { Badge } from './badge.js';
 
 let instance;
 
@@ -113,7 +114,6 @@ export class CommentBrowser extends Window {
   async addCommentForMorph (comment, morph) {
     if (morph.id in this.commentGroups) {
       await this.commentGroups[morph.id].addCommentMorph(comment);
-      this.commentGroups[morph.id].relayout();
     } else {
       const commentGroupMorph = await resource('part://CommentGroupMorphMockup/comment group morph master').read();
       await commentGroupMorph.initialize(morph);
@@ -121,6 +121,8 @@ export class CommentBrowser extends Window {
       await this.commentGroups[morph.id].addCommentMorph(comment);
       this.layoutContainer.addMorph(commentGroupMorph);
     }
+
+    this.updateCommentCountBadge();
   }
 
   async removeCommentForMorph (comment, morph) {
@@ -129,6 +131,7 @@ export class CommentBrowser extends Window {
     if (group.getCommentMorphCount() === 0) {
       this.removeCommentGroup(group);
     }
+    this.updateCommentCountBadge();
   }
 
   removeCommentGroup (group) {
@@ -151,6 +154,26 @@ export class CommentBrowser extends Window {
       }
     });
     return result;
+  }
+
+  getCommentCount () {
+    return this.layoutContainer.submorphs.reduce((acc, cur) => cur.getCommentMorphCount() + acc, 0);
+  }
+
+  updateCommentCountBadge () {
+    const count = this.getCommentCount();
+    let badge = $world.get('lively top bar').get('comment browser button').get('comment count badge');
+    if (badge) {
+      if (count <= 0) {
+        badge.remove();
+        return;
+      }
+      badge.setText(count);
+    } else if (count > 0) {
+      badge = Badge.newWithText(count);
+      badge.name = 'comment count badge';
+      badge.addToMorph($world.get('lively top bar').get('comment browser button'));
+    }
   }
 
   // named relayoutWindows instead of relayout() to not block respondsToVisibleWindow() implementation
