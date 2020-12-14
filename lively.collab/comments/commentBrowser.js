@@ -25,6 +25,7 @@ export class CommentBrowser extends Window {
   }
 
   static async addCommentForMorph (comment, morph) {
+    if (!instance) CommentBrowser.initializeCommentBrowser();
     await instance.addCommentForMorph(comment, morph);
   }
 
@@ -32,12 +33,17 @@ export class CommentBrowser extends Window {
     const firstTimeOpened = !instance;
     new CommentBrowser();
     if (firstTimeOpened) {
-      await instance.initializeCommentGroupMorphs();
+      const commentGroupMorphs = [];
     }
   }
 
   static toggle () {
-    CommentBrowser.isOpen() ? CommentBrowser.close() : CommentBrowser.initializeCommentBrowser();
+    if (CommentBrowser.isOpen()) {
+      CommentBrowser.close();
+    } else {
+      CommentBrowser.initializeCommentBrowser();
+      instance.makeVisible();
+    }
   }
 
   // Construction and initialization
@@ -53,7 +59,6 @@ export class CommentBrowser extends Window {
       this.name = 'comment browser';
       this.commentGroups = {}; // dict Morph id -> Comment group morph
     }
-    this.makeVisible();
     return instance;
   }
 
@@ -96,18 +101,6 @@ export class CommentBrowser extends Window {
       topbar.uncolorCommentBrowserButton();
     }
     this.remove();
-  }
-
-  async initializeCommentGroupMorphs () {
-    const commentGroupMorphs = [];
-    await Promise.all($world.withAllSubmorphsDo(async (morph) => {
-      if (morph.comments.length == 0) {
-        return;
-      }
-      morph.comments.forEach(async (comment) => {
-        await this.addCommentForMorph(comment, morph);
-      });
-    }));
   }
 
   async addCommentForMorph (comment, morph) {
