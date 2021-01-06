@@ -2382,7 +2382,7 @@ export class Morph {
     return morph({ type: exported.type }).initFromJSON(exported);
   }
 
-  copy () { return copyMorph(this); }
+  copy (realCopy = false) { return copyMorph(this, realCopy); }
 
   async interactivelyPublish () {
     const world = this.world() || this.env.world;
