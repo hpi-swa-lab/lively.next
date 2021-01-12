@@ -278,7 +278,7 @@ export class CommentMorph extends Morph {
   }
 
   hideCommentIndicator () {
-    this.commentIndicator.abandon();
+    this.commentIndicator.remove();
   }
 
   showCommentIndicator () {
