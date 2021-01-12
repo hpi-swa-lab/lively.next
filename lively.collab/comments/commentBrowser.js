@@ -49,6 +49,7 @@ export class CommentBrowser extends Window {
       CommentBrowser.instance.wasOpenedBefore = true;
     }
     $world.addMorph(CommentBrowser.instance);
+    CommentBrowser.instance.showCommentIndicators();
   }
 
   static close () {
@@ -58,6 +59,7 @@ export class CommentBrowser extends Window {
     if (topbar) {
       topbar.uncolorCommentBrowserButton();
     }
+    CommentBrowser.instance.hideAllCommentIndicators();
     CommentBrowser.instance.remove();
   }
 
@@ -184,8 +186,21 @@ export class CommentBrowser extends Window {
 
     containerToRemove.remove();
     this.container.addMorph(newContainer);
-    containerToRemove.submorphs.forEach((commentGroup) => commentGroup.hideCommentIndicators());
-    newContainer.submorphs.forEach((commentGroup) => commentGroup.showCommentIndicators());
+    this.hideAllCommentIndicators();
+    this.showCommentIndicators();
+  }
+
+  showCommentIndicators () {
+    if (this.showsResolvedComments) {
+      this.resolvedCommentContainer.submorphs.forEach((commentGroup) => commentGroup.showCommentIndicators());
+    } else {
+      this.commentContainer.submorphs.forEach((commentGroup) => commentGroup.showCommentIndicators());
+    }
+  }
+
+  hideAllCommentIndicators () {
+    this.resolvedCommentContainer.submorphs.forEach((commentGroup) => commentGroup.hideCommentIndicators());
+    this.commentContainer.submorphs.forEach((commentGroup) => commentGroup.hideCommentIndicators());
   }
 
   buildCommentGroupMorphs () {
