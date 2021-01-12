@@ -82,8 +82,27 @@ export async function saveWorldToResource (world = MorphicEnv.default().world, t
   } finally { i && i.remove(); }
 }
 
-export function copyMorph (morph) {
-  return deserializeMorph(serializeMorph(morph), { migrations, reinitializeIds: true });
+export function copyMorph (morph, realCopy = false) {
+  if (!realCopy) {
+    return deserializeMorph(serializeMorph(morph), { migrations, reinitializeIds: true });
+  }
+  const cachedComments = morph.comments;
+  morph.comments = [];
+
+  let cachedConnections = [];
+  if (morph.attributeConnections) {
+    cachedConnections = morph.attributeConnections.filter(ac => ac.targetObj.isCommentIndicator);
+    morph.attributeConnections = morph.attributeConnections.filter(ac => !(ac.targetObj.isCommentIndicator || ac.targetObj.isHalo));
+  }
+
+  const serializedMorph = serializeMorph(morph);
+
+  morph.comments = cachedComments;
+  if (morph.attributeConnections) {
+    morph.attributeConnections = morph.attributeConnections.concat(cachedConnections);
+  }
+
+  return deserializeMorph(serializedMorph, { migrations, reinitializeIds: true });
 }
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -92,6 +111,8 @@ import * as modules from 'lively.modules';
 import { createFiles } from 'lively.resources';
 import { promise, graph, arr } from 'lively.lang';
 import { migrations } from './object-migration.js';
+import { CommentIndicator } from 'lively.collab';
+import { Halo } from 'lively.halos';
 
 const { registerPackage, module, getPackage, ensurePackage, lookupPackage, semver } = modules;
 

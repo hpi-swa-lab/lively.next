@@ -13,7 +13,7 @@ import { obj, Path as PropertyPath, promise, properties, num, arr } from 'lively
 import { connect, signal, disconnect, disconnectAll, once } from 'lively.bindings';
 
 import { showAndSnapToGuides, showAndSnapToResizeGuides, removeSnapToGuidesOf } from './drag-guides.js';
-import { CommentBrowser } from 'lively.collab';
+import { CommentBrowser, CommentIndicator } from 'lively.collab';
 import { resource } from 'lively.resources';
 import { show } from './markers.js';
 
@@ -1375,12 +1375,17 @@ class CopyHaloItem extends HaloItem {
     const { halo } = this; const { target } = halo; const world = halo.world();
     const isMultiSelection = target instanceof MultiSelectionTarget;
     halo.remove();
-
     connect(hand, 'update', this, 'update');
-
     if (isMultiSelection) {
       // FIXME! haaaaack
-      const copies = target.selectedMorphs.map(ea => world.addMorph(ea.copy()));
+      const copies = target.selectedMorphs.map(ea => {
+        if (ea.canBeCopied()) {
+          const copy = ea.copy(true);
+          world.addMorph(copy);
+          return copy;
+        }
+      }).filter(copy => copy);
+
       const positions = copies.map(ea => { ea.name = findNewName(target, ea.name); return ea.position; });
       copies[0].undoStart('copy-halo');
       world.addMorph(halo);
@@ -1391,7 +1396,7 @@ class CopyHaloItem extends HaloItem {
       halo.alignWithTarget();
     } else {
       const pos = target.globalPosition;
-      const copy = target.copy();
+      const copy = target.copy(true);
       if (target.isComponent) {
         copy.isComponent = false;
         copy.withAllSubmorphsDoExcluding(m => {
@@ -1449,7 +1454,9 @@ class CopyHaloItem extends HaloItem {
     const world = halo.world();
     const isMultiSelection = t instanceof MultiSelectionTarget;
     const origin = t.globalBounds().topLeft();
+    // the original morphs are needed so we can refocus them with a halo after copying
     const morphsToCopy = isMultiSelection ? t.selectedMorphs : [t];
+    const modifiedMorphsToCopy = morphsToCopy.filter(morph => !morph.isCommentIndicator).map(morph => morph.copy(true));
     const snapshots = [];
     let html = `<!DOCTYPE html>
           <html lang="en">
@@ -1461,7 +1468,7 @@ class CopyHaloItem extends HaloItem {
 
     halo.remove(); // we do not want to copy the halo
     try {
-      for (const m of morphsToCopy) {
+      for (const m of modifiedMorphsToCopy) {
         const snap = await createMorphSnapshot(m, { addPreview: false, testLoad: false });
         snap.copyMeta = { offset: m.worldPoint(pt(0, 0)).subPt(origin) };
         snapshots.push(snap);

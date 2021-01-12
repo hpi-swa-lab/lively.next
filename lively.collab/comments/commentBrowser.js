@@ -210,8 +210,7 @@ export class CommentBrowser extends Window {
     }
 
     if (!(morph.id in groupDictionary)) {
-      // TODO change when package location got changed
-      const commentGroupMorph = await resource('part://CommentGroupMorphMockup/comment group morph master').read();
+      const commentGroupMorph = await resource('part://CommentComponents/comment group morph master').read();
       await commentGroupMorph.initialize(morph);
       groupDictionary[morph.id] = commentGroupMorph;
       commentContainer.addMorph(commentGroupMorph);

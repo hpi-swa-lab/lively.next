@@ -83,7 +83,7 @@ export class CommentGroupMorph extends Morph {
   async removeCommentMorphFor (comment) {
     this.commentMorphs.forEach((commentMorph) => {
       if (commentMorph.comment.equals(comment)) {
-        commentMorph.delete();
+        commentMorph.abandon();
         remove(this.commentMorphs, commentMorph);
       }
     });
@@ -208,6 +208,7 @@ export class CommentMorph extends Morph {
 
   setDefaultUI () {
     Icon.setIcon(this.ui.editSaveButton, 'pencil-alt');
+    Icon.setIcon(this.ui.resolveButton, this.comment.resolved ? 'undo-alt' : 'check');
 
     // Edit/Save Icon widths are off by one, revert the additional padding from setEditUI
     if (this.isInEditMode) this.ui.editSaveButton.padding.width -= 1;
@@ -218,7 +219,7 @@ export class CommentMorph extends Morph {
     this.ui.editSaveButton.tooltip = 'Edit Comment';
 
     this.ui.commentTextField.readOnly = true;
-    this.ui.commentTextField.fill = Color.rgb(240, 243, 244);
+    this.ui.commentTextField.fill = Color.rgb(251, 252, 252);
     this.ui.commentTextField.borderStyle = 'none';
   }
 
@@ -274,16 +275,16 @@ export class CommentMorph extends Morph {
   }
 
   hideCommentIndicator () {
-    this.commentIndicator.delete();
+    this.commentIndicator.abandon();
   }
 
   showCommentIndicator () {
     this.commentIndicator.display();
   }
 
-  delete () {
-    this.commentIndicator.delete();
-    this.remove();
+  abandon () {
+    this.commentIndicator.abandon();
+    super.abandon();
   }
 
   performClickAction (action) {

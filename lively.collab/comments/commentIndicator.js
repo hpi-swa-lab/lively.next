@@ -4,6 +4,10 @@ import { connect, disconnect, disconnectAll } from 'lively.bindings';
 import { CommentBrowser } from 'lively.collab';
 
 export class CommentIndicator extends Label {
+
+  get isCommentIndicator () {
+    return true;
+
   static get properties () {
     return {
       comment: {
@@ -77,17 +81,21 @@ export class CommentIndicator extends Label {
     return pt(xRelative, yRelative);
   }
 
-  delete () {
+  abandon () {
     const referenceMorph = this.referenceMorph;
     disconnect(referenceMorph, 'onChange', this, 'referenceMoving');
     disconnect(referenceMorph, 'onOwnerChanged', this, 'connectMorphs');
-    this.remove();
+    super.abandon();
   }
 
   display () {
     this.connectMorphs();
     this.alignWithMorph();
     $world.addMorph(this);
+  }
+
+  canBeCopied () {
+    return false;
   }
 
   referenceMoving () {
