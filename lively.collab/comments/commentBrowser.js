@@ -9,6 +9,8 @@ import { ModeSelector } from 'lively.components/widgets.js';
 let instance;
 
 export class CommentBrowser extends Window {
+  // static methods are the external interface
+
   static close () {
     if (CommentBrowser.isOpen()) {
       instance.close();
@@ -33,6 +35,10 @@ export class CommentBrowser extends Window {
 
   static async addCommentForMorph (comment, morph) {
     await instance.addCommentForMorph(comment, morph);
+  }
+
+  static updateName (morph) {
+    instance.updateName(morph);
   }
 
   static initializeCommentBrowser () {
@@ -213,6 +219,11 @@ export class CommentBrowser extends Window {
       this.removeCommentGroup(groupOfCommentMorph, groupDictionary);
     }
     this.updateCommentCountBadge();
+  }
+
+  updateName (morph) {
+    this.resolvedCommentGroups[morph.id] && this.resolvedCommentGroups[morph.id].updateName();
+    this.commentGroups[morph.id] && this.commentGroups[morph.id].updateName();
   }
 
   async applyResolveStatus (comment, referenceMorph) {
