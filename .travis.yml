@@ -14,5 +14,6 @@ script:
   # make better
   - sleep 60
   - node lively.headless/headless.js
+  - ls
 #  - chmod a+x "./scripts/ci-tests.sh"
 #  - "./scripts/ci-tests.sh"
