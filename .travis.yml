@@ -9,9 +9,9 @@ install:
   - ./install.sh # make quiet?
 
 script:
-  - ./start.sh &
+  - ./start.sh > dev/null & 
   # make better
-  - sleep 120
-  - node .lively.headless/headless.js
+  - sleep 60
+  - node lively.headless/headless.js
 #  - chmod a+x "./scripts/ci-tests.sh"
 #  - "./scripts/ci-tests.sh"
