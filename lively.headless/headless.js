@@ -1,4 +1,5 @@
-const puppeteer = System._nodeRequire("puppeteer");
+
+const puppeteer = require("puppeteer");
 
 (async () => {
   const browser = await puppeteer.launch();

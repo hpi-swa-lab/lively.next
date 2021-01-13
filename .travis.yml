@@ -7,9 +7,10 @@ node_js:
 
 install:
   - ./install.sh # make quiet?
+  - npm i puppeteer
 
 script:
-  - ./start.sh > dev/null & 
+  - ./start.sh > /dev/null & 
   # make better
   - sleep 60
   - node lively.headless/headless.js
