@@ -12,6 +12,6 @@ script:
   - ./start.sh &
   # make better
   - sleep 120
-  - node ./headless.js
+  - node .lively.headless/headless.js
 #  - chmod a+x "./scripts/ci-tests.sh"
 #  - "./scripts/ci-tests.sh"
