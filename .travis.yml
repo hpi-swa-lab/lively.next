@@ -6,8 +6,12 @@ node_js:
   - "15"
 
 install:
+  - ./install.sh # make quiet?
 
 script:
-  - ./install.sh # move up to install
+  - ./start.sh &
+  # make better
+  - sleep 120
+  - node ./headless.js
 #  - chmod a+x "./scripts/ci-tests.sh"
 #  - "./scripts/ci-tests.sh"
