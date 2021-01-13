@@ -10,7 +10,7 @@ install:
   - npm i puppeteer
 
 script:
-  - ./start.sh > /dev/null & 
+  - ./start.sh & #> /dev/null 2> /dev/null & 
   # make better
   - sleep 60
   - node lively.headless/headless.js
