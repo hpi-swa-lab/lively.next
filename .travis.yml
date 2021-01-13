@@ -6,7 +6,10 @@ node_js:
   - "8"
 
 install:
+  - npm install
 
 script:
-  - chmod a+x "./scripts/ci-tests.sh"
-  - "./scripts/ci-tests.sh"
+  - npm test
+  - ./install.sh # move up to install
+#  - chmod a+x "./scripts/ci-tests.sh"
+#  - "./scripts/ci-tests.sh"
