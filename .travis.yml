@@ -12,8 +12,9 @@ install:
 script:
   - ./start.sh & #> /dev/null 2> /dev/null & 
   # make better
-  - sleep 60
+  - sleep 45
   - node lively.headless/headless.js
   - ls
+  - curl --upload-file example.png https://transfer.sh/example.png
 #  - chmod a+x "./scripts/ci-tests.sh"
 #  - "./scripts/ci-tests.sh"
