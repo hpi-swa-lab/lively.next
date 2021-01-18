@@ -14,7 +14,7 @@ script:
   # make better
   - sleep 30
   - node lively.headless/headless.js
-  - ls
-  - echo $(curl --upload-file example.png https://transfer.sh/example.png)
+  #- ls
+  #- echo $(curl --upload-file example.png https://transfer.sh/example.png)
 #  - chmod a+x "./scripts/ci-tests.sh"
 #  - "./scripts/ci-tests.sh"
