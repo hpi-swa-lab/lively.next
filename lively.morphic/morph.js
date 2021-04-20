@@ -814,6 +814,7 @@ export class Morph {
     this._tickingScripts = [];
     this._parametrizedProps = obj.select(props, arr.intersect(Object.keys(props), this.styleProperties));
     this.initializeProperties(props);
+    this.unpackClosures(props);
 
     if (props.bounds) {
       this.setBounds(props.bounds);
@@ -852,6 +853,8 @@ export class Morph {
   }
 
   __after_deserialize__ (snapshot, ref, pool) {
+    this.unpackClosures(this);
+
     this.resumeStepping();
     // too late, the master may have already applied itself here...
     if (typeof this.onLoad === 'function') {
@@ -916,6 +919,8 @@ export class Morph {
           (prop, value) => value && value.isColor ? value.toTuple() : value)
       };
     }
+
+    this.packClosures(ref.realObj, addFn);
   }
 
   get isMorph () { return true; }
@@ -981,6 +986,20 @@ export class Morph {
     }
     printed += singleIndent.repeat(depth) + '}\n';
     return printed;
+  }
+
+  packClosures (properties, addFn) {
+    Object.entries(properties).forEach(([key, value]) => {
+      if (!value || !value.livelyClosure) return;
+      addFn(key, value.livelyClosure);
+    });
+  }
+
+  unpackClosures (properties) {
+    Object.entries(properties).forEach(([key, value]) => {
+      if (!value || !value.isLivelyClosure) return;
+      this[key] = value.getFunc();
+    });
   }
 
   get defaultProperties () {
