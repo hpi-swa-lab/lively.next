@@ -85,10 +85,11 @@ export default class ExpressionSerializer {
   getExpressionForFunction (func) {
     // returns serializable expression for a function which has module information
     const { package: pkg, pathInPackage } = func[Symbol.for('lively-module-meta')];
+    const path = pkg.name ? joinPath(pkg.name, pathInPackage) : pathInPackage;
     return this.exprStringEncode({
       __expr__: func.name,
       bindings: {
-        [joinPath(pkg.name, pathInPackage)]: [func.name]
+        [path]: [func.name]
       }
     });
   }

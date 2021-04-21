@@ -20,6 +20,8 @@
 // closure.getFuncSource() // => "function func(a) { return a + b; }"
 
 import { evalJS } from './function.js';
+import { obj } from 'lively.lang';
+import { ExpressionSerializer } from 'lively.serializer2';
 
 const parameterRegex = /function[^\(]*\(([^\)]*)\)|\(?([^\)=]*)\)?\s*=>/;
 
@@ -45,6 +47,25 @@ export default class Closure {
 
   // serialization
   get doNotSerialize () { return ['originalFunc']; }
+
+  __additionally_serialize__ (snapshot, ref, pool, addFn) {
+    addFn('varMapping', this._getSerializableVarMapping());
+  }
+
+  _getSerializableVarMapping () {
+    const varMappingCopy = { ...this.varMapping };
+    for (const varName of Object.keys(varMappingCopy)) {
+      try {
+        if (obj.isFunction(varMappingCopy[varName])) {
+          varMappingCopy[varName] = new ExpressionSerializer()
+            .getExpressionForFunction(varMappingCopy[varName]);
+        }
+      } catch (err) {
+        throw new Error(`Cannot be serialized due to lack of module information: ${varName} in ${this}`);
+      }
+    }
+    return varMappingCopy;
+  }
 
   // accessing
   setFuncSource (src) {

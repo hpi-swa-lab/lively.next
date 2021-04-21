@@ -75,7 +75,7 @@ export class AttributeConnection {
             .getExpressionForFunction(varMappingCopy[varName]);
         }
       } catch (err) {
-        throw new Error(`Cannot be serialized due to lack of module information: ${varName} in ${this}`);
+        console.warning(`Cannot be serialized due to lack of module information: ${varName} in ${this}`);
       }
     }
     return varMappingCopy;
